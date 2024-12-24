@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Ettara Caffe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f5e6d3;
+            background-image: url('https://www.transparenttextures.com/patterns/coffee-beans.png');
+            min-height: 100vh;
+            color: #4a3428;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #2c1810;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 1rem;
+            color: #8b7355;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            background: rgba(139, 115, 85, 0.1);
+        }
+        .back-link:hover {
+            color: #4a3428;
+            background: rgba(139, 115, 85, 0.2);
+            transform: translateY(-2px);
+        }
+        .admin-options {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            justify-content: center;
+        }
+        .admin-button {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 15px;
+            background: white;
+            color: #4a3428;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .admin-button:hover, .admin-button.active {
+            background: #4a3428;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        .admin-form {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .admin-form.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #2c1810;
+        }
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            color: #4a3428;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #8b7355;
+            box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.2);
+        }
+        .form-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%234a3428' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+        }
+        .submit-button {
+            background: #4a3428;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .submit-button:hover {
+            background: #2c1810;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        .delete-button {
+            background: #ff4444;
+        }
+        .delete-button:hover {
+            background: #cc3333;
+        }
+        .required {
+            color: #ff4444;
+            margin-left: 0.2rem;
+        }
+        .confirmation-dialog {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            text-align: center;
+        }
+        .confirmation-dialog.active {
+            display: block;
+        }
+        .dialog-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        .dialog-button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .confirm-button {
+            background: #ff4444;
+            color: white;
+        }
+        .cancel-button {
+            background: #ddd;
+            color: #4a3428;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .admin-options {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .admin-button {
+                width: 100%;
+            }
+            .admin-form {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Admin Panel</h1>
+            <a href="{{ url_for('home') }}" class="back-link">← Back to Home</a>
+        </header>
+
+        <div class="admin-options">
+            <button class="admin-button" onclick="showForm('add')">Add Item</button>
+            <button class="admin-button" onclick="showForm('update')">Update Item</button>
+            <button class="admin-button" onclick="showForm('delete')">Delete Item</button>
+        </div>
+
+        <!-- Add Item Form -->
+        <form id="add-form" class="admin-form" onsubmit="handleSubmit(event, 'add')">
+            <div class="form-group">
+                <label class="form-label">Category<span class="required">*</span></label>
+                <select class="form-select" name="category" required onchange="updateFields(this.value, 'add')">
+                    <option value="">Select Category</option>
+                    {% for category in categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div id="dynamic-fields-add"></div>
+            <button type="submit" class="submit-button">Add Item</button>
+        </form>
+
+        <!-- Update Item Form -->
+        <form id="update-form" class="admin-form" onsubmit="handleSubmit(event, 'update')">
+            <div class="form-group">
+                <label class="form-label">Category<span class="required">*</span></label>
+                <select class="form-select" name="category" required onchange="loadItems(this.value)">
+                    <option value="">Select Category</option>
+                    {% for category in categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Item<span class="required">*</span></label>
+                <select class="form-select" name="item" required onchange="loadItemDetails(this.value)">
+                    <option value="">Select Item</option>
+                </select>
+            </div>
+            <div id="dynamic-fields-update"></div>
+            <button type="submit" class="submit-button">Save Changes</button>
+        </form>
+
+        <!-- Delete Item Form -->
+        <form id="delete-form" class="admin-form" onsubmit="handleSubmit(event, 'delete')">
+            <div class="form-group">
+                <label class="form-label">Category<span class="required">*</span></label>
+                <select class="form-select" name="category" required onchange="loadItems(this.value, 'delete')">
+                    <option value="">Select Category</option>
+                    {% for category in categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Item<span class="required">*</span></label>
+                <select class="form-select" name="item" required>
+                    <option value="">Select Item</option>
+                </select>
+            </div>
+            <button type="submit" class="submit-button delete-button">Delete Item</button>
+        </form>
+
+        <!-- Confirmation Dialog -->
+        <div id="confirmation-dialog" class="confirmation-dialog">
+            <h2>Are you sure?</h2>
+            <p>This action cannot be undone.</p>
+            <div class="dialog-buttons">
+                <button class="dialog-button confirm-button" onclick="confirmDelete()">Yes, Delete</button>
+                <button class="dialog-button cancel-button" onclick="hideConfirmation()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showForm(type) {
+            document.querySelectorAll('.admin-form').forEach(form => form.classList.remove('active'));
+            document.querySelectorAll('.admin-button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`${type}-form`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function updateFields(category, formType) {
+            const container = document.getElementById(`dynamic-fields-${formType}`);
+            fetch(`/get_category_fields/${category}`)
+                .then(response => response.json())
+                .then(fields => {
+                    container.innerHTML = fields.map(field => {
+                        if (field === 'Image') {
+                            return `
+                                <div class="form-group">
+                                    <label class="form-label">${field}<span class="required">*</span></label>
+                                    <input type="file" 
+                                           class="form-input" 
+                                           name="${field.toLowerCase()}"
+                                           accept="image/*">
+                                    <small style="color: #666; margin-top: 0.5rem; display: block;">
+                                        Accepted formats: .jpg, .jpeg, .png, .gif, .webp
+                                    </small>
+                                </div>
+                            `;
+                        }
+                        if (field === 'Item Name' || field === 'Product Description' || field.includes('Price')) {
+                            return `
+                                <div class="form-group">
+                                    <label class="form-label">${field}<span class="required">*</span></label>
+                                    <input type="${field.includes('Price') ? 'number' : 'text'}" 
+                                           class="form-input" 
+                                           name="${field.toLowerCase()}"
+                                           ${field !== 'Tags' ? 'required' : ''}>
+                                </div>
+                            `;
+                        }
+                        return `
+                            <div class="form-group">
+                                <label class="form-label">${field}</label>
+                                <input type="text" 
+                                       class="form-input" 
+                                       name="${field.toLowerCase()}">
+                            </div>
+                        `;
+                    }).join('');
+                });
+        }
+
+        function loadItems(category, formType = 'update') {
+            const form = document.getElementById(`${formType}-form`);
+            const itemSelect = form.querySelectorAll('select')[1];
+            fetch(`/get_category_items/${category}`)
+                .then(response => response.json())
+                .then(items => {
+                    itemSelect.innerHTML = '<option value="">Select Item</option>' +
+                        items.map(item => `<option value="${item}">${item}</option>`).join('');
+                });
+        }
+
+        function loadItemDetails(itemName) {
+            const category = document.getElementById('update-form').querySelector('select').value;
+            fetch(`/get_item_details/${category}/${itemName}`)
+                .then(response => response.json())
+                .then(details => {
+                    const container = document.getElementById('dynamic-fields-update');
+                    container.innerHTML = `
+                        <input type="hidden" name="category" value="${category}">
+                        <input type="hidden" name="item" value="${itemName}">
+                        ${Object.entries(details).map(([field, value]) => {
+                            if (field === 'Image') {
+                                return `
+                                    <div class="form-group">
+                                        <label class="form-label">${field}</label>
+                                        <div style="margin-bottom: 0.5rem;">Current image: ${value || 'None'}</div>
+                                        <input type="file" 
+                                               class="form-input" 
+                                               name="${field.toLowerCase()}"
+                                               accept="image/*">
+                                        <small style="color: #666; margin-top: 0.5rem; display: block;">
+                                            Leave empty to keep current image. Accepted formats: .jpg, .jpeg, .png, .gif, .webp
+                                        </small>
+                                    </div>
+                                `;
+                            }
+                            return `
+                                <div class="form-group">
+                                    <label class="form-label">${field}${field !== 'Tags' ? '<span class="required">*</span>' : ''}</label>
+                                    <input type="text" 
+                                           class="form-input" 
+                                           name="${field.toLowerCase()}"
+                                           value="${value}"
+                                           ${field !== 'Tags' ? 'required' : ''}>
+                                </div>
+                            `;
+                        }).join('')}
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error loading item details. Please try again.');
+                });
+        }
+
+        function handleSubmit(event, type) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+
+            if (type === 'delete') {
+                document.getElementById('confirmation-dialog').classList.add('active');
+                return;
+            }
+            
+            fetch(`/${type}_item`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('Operation successful!');
+                    location.reload();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
+        }
+
+        function confirmDelete() {
+            const form = document.getElementById('delete-form');
+            const formData = new FormData(form);
+            fetch('/delete_item', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json())
+              .then(result => {
+                  if (result.success) {
+                      alert('Item deleted successfully!');
+                      location.reload();
+                  } else {
+                      alert('Error: ' + result.message);
+                  }
+              });
+            hideConfirmation();
+        }
+
+        function hideConfirmation() {
+            document.getElementById('confirmation-dialog').classList.remove('active');
+        }
+    </script>
+</body>
+</html> 

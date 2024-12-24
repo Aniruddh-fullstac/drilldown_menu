@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ettara Caffe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f5e6d3;
+            background-image: url('https://www.transparenttextures.com/patterns/coffee-beans.png');
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-family: 'Playfair Display', serif;
+            color: #4a3428;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .subtitle {
+            color: #8b7355;
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            padding: 1rem;
+        }
+        .category-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: #4a3428;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .category-card h2 {
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 1rem;
+            color: #4a3428;
+        }
+        .coffee-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #8b7355;
+        }
+        .steam {
+            position: relative;
+            font-size: 1.5rem;
+            opacity: 0.7;
+            animation: steam 2s infinite;
+        }
+        @keyframes steam {
+            0% { transform: translateY(0) scale(1); opacity: 0.7; }
+            50% { transform: translateY(-10px) scale(1.2); opacity: 0.4; }
+            100% { transform: translateY(-20px) scale(1.4); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Ettara Caffe</h1>
+            <p class="subtitle">Discover our carefully curated selection of premium coffee and treats</p>
+        </header>
+        
+        <div class="categories">
+            {% for category in categories %}
+            <a href="{{ url_for('category', sheet_name=category) }}" class="category-card">
+                <div class="coffee-icon">☕</div>
+                <div class="steam">~</div>
+                <h2>{{ category }}</h2>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
