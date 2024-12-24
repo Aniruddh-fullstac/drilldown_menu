@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Ettara Caffe</title>
+    <title>Admin Panel - Ettarra Coffee House</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         * {
@@ -218,7 +218,31 @@
             <button class="admin-button" onclick="showForm('add')">Add Item</button>
             <button class="admin-button" onclick="showForm('update')">Update Item</button>
             <button class="admin-button" onclick="showForm('delete')">Delete Item</button>
+            <button class="admin-button" onclick="showForm('excel')">Manage Excel</button>
         </div>
+
+        <!-- Excel Management Form -->
+        <form id="excel-form" class="admin-form" style="text-align: center;">
+            <h2 style="margin-bottom: 2rem;">Excel File Management</h2>
+            <div style="margin-bottom: 2rem;">
+                <a href="{{ url_for('download_excel') }}" class="submit-button" style="display: inline-block; text-decoration: none; margin-bottom: 1rem;">
+                    Download Current Excel File
+                </a>
+            </div>
+            <div>
+                <h3 style="margin-bottom: 1rem;">Upload Updated Excel File</h3>
+                <input type="file" 
+                       id="excel-file" 
+                       accept=".xlsx" 
+                       style="margin-bottom: 1rem;"
+                       class="form-input">
+                <button type="button" 
+                        onclick="uploadExcel()" 
+                        class="submit-button">
+                    Upload Excel File
+                </button>
+            </div>
+        </form>
 
         <!-- Add Item Form -->
         <form id="add-form" class="admin-form" onsubmit="handleSubmit(event, 'add')">
@@ -442,6 +466,42 @@
 
         function hideConfirmation() {
             document.getElementById('confirmation-dialog').classList.remove('active');
+        }
+
+        function uploadExcel() {
+            const fileInput = document.getElementById('excel-file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a file to upload');
+                return;
+            }
+
+            if (!file.name.endsWith('.xlsx')) {
+                alert('Please upload an Excel (.xlsx) file');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('excel_file', file);
+
+            fetch('/upload_excel', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('Excel file updated successfully!');
+                    location.reload();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
         }
     </script>
 </body>

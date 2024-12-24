@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, url_for
+from flask import Flask, render_template, jsonify, request, url_for, send_file, redirect
 import pandas as pd
 import os
 from werkzeug.utils import secure_filename
@@ -242,6 +242,52 @@ def delete_item():
         
         return jsonify({'success': True})
     except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/download_excel')
+def download_excel():
+    try:
+        return send_file('coffee_menu.xlsx',
+                        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                        as_attachment=True,
+                        download_name='coffee_menu.xlsx')
+    except Exception as e:
+        return str(e)
+
+@app.route('/upload_excel', methods=['POST'])
+def upload_excel():
+    if 'excel_file' not in request.files:
+        return jsonify({'success': False, 'message': 'No file uploaded'})
+    
+    file = request.files['excel_file']
+    if file.filename == '':
+        return jsonify({'success': False, 'message': 'No file selected'})
+    
+    if not file.filename.endswith('.xlsx'):
+        return jsonify({'success': False, 'message': 'Please upload an Excel (.xlsx) file'})
+    
+    try:
+        # Save to a temporary file first
+        temp_file = 'temp_coffee_menu.xlsx'
+        file.save(temp_file)
+        
+        # Verify the file can be read
+        try:
+            pd.read_excel(temp_file, sheet_name=None)
+        except Exception as e:
+            os.remove(temp_file)
+            return jsonify({'success': False, 'message': f'Invalid Excel file: {str(e)}'})
+        
+        # If verification successful, replace the original file
+        if os.path.exists('coffee_menu.xlsx'):
+            os.replace(temp_file, 'coffee_menu.xlsx')
+        else:
+            os.rename(temp_file, 'coffee_menu.xlsx')
+            
+        return jsonify({'success': True})
+    except Exception as e:
+        if os.path.exists(temp_file):
+            os.remove(temp_file)
         return jsonify({'success': False, 'message': str(e)})
 
 if __name__ == '__main__':
